@@ -1,0 +1,302 @@
+/* Galaxy Music - style.css */
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Poppins',sans-serif;
+}
+
+:root{
+  --bg:#121212;
+  --card:#1b1b1b;
+  --card2:#242424;
+  --accent:#22c55e;
+  --text:#ffffff;
+  --muted:#b3b3b3;
+}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+}
+
+#splash{
+  position:fixed;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  background:#111;
+  z-index:9999;
+  animation:hideSplash .8s ease 2s forwards;
+}
+
+.logoCircle{
+  width:110px;
+  height:110px;
+  border-radius:50%;
+  background:var(--accent);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:42px;
+  color:#fff;
+  margin-bottom:20px;
+}
+
+@keyframes hideSplash{
+  to{
+    opacity:0;
+    visibility:hidden;
+  }
+}
+
+header{
+  padding:25px 20px 10px;
+}
+
+header h2{
+  font-size:28px;
+  margin-bottom:18px;
+}
+
+.searchBox{
+  display:flex;
+  align-items:center;
+  background:#222;
+  border-radius:30px;
+  padding:12px 18px;
+}
+
+.searchBox i{
+  color:#888;
+}
+
+.searchBox input{
+  flex:1;
+  background:none;
+  border:none;
+  outline:none;
+  color:#fff;
+  margin-left:12px;
+  font-size:15px;
+}
+
+.hero{
+  margin:20px;
+  border-radius:22px;
+  overflow:hidden;
+  background:linear-gradient(135deg,#22c55e,#15803d);
+  min-height:220px;
+}
+
+.heroOverlay{
+  padding:30px;
+  min-height:220px;
+  display:flex;
+  align-items:flex-end;
+}
+
+.hero h1{
+  font-size:36px;
+  margin:8px 0 18px;
+}
+
+.hero button{
+  border:none;
+  background:#fff;
+  color:#111;
+  padding:12px 24px;
+  border-radius:999px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+.section{
+  padding:0 20px 30px;
+}
+
+.sectionTitle{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:18px;
+}
+
+.chips{
+  display:flex;
+  gap:10px;
+  overflow:auto;
+  padding-bottom:5px;
+}
+
+.chip{
+  white-space:nowrap;
+  background:#232323;
+  padding:10px 18px;
+  border-radius:999px;
+}
+
+.musicList{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+
+.musicCard{
+  display:flex;
+  align-items:center;
+  background:var(--card);
+  border-radius:18px;
+  padding:12px;
+  transition:.25s;
+}
+
+.musicCard:hover{
+  background:var(--card2);
+}
+
+.musicCard img{
+  width:70px;
+  height:70px;
+  border-radius:14px;
+  object-fit:cover;
+}
+
+.musicInfo{
+  flex:1;
+  margin-left:15px;
+}
+
+.musicInfo h4{
+  font-size:17px;
+}
+
+.musicInfo p{
+  color:var(--muted);
+  margin-top:5px;
+  font-size:14px;
+}
+
+.musicActions{
+  display:flex;
+  gap:10px;
+}
+
+.musicActions button{
+  border:none;
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  cursor:pointer;
+  color:#fff;
+  background:#2d2d2d;
+}
+
+.musicActions .playBtn{
+  background:var(--accent);
+}
+
+#player{
+  position:fixed;
+  left:10px;
+  right:10px;
+  bottom:80px;
+  background:#1d1d1d;
+  border-radius:18px;
+  padding:12px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  box-shadow:0 8px 30px rgba(0,0,0,.35);
+}
+
+.playerLeft{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  overflow:hidden;
+}
+
+.playerLeft img{
+  width:55px;
+  height:55px;
+  border-radius:12px;
+}
+
+.playerLeft h4{
+  font-size:15px;
+}
+
+.playerLeft p{
+  color:var(--muted);
+  font-size:13px;
+}
+
+.playerControls{
+  display:flex;
+  gap:10px;
+}
+
+.playerControls button{
+  width:42px;
+  height:42px;
+  border:none;
+  border-radius:50%;
+  background:#333;
+  color:#fff;
+  cursor:pointer;
+}
+
+#play{
+  background:var(--accent);
+}
+
+nav{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  height:68px;
+  background:#111;
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
+  border-top:1px solid #222;
+}
+
+.navItem{
+  border:none;
+  background:none;
+  color:#999;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:4px;
+  cursor:pointer;
+}
+
+.navItem.active{
+  color:var(--accent);
+}
+
+@media(max-width:768px){
+
+.hero h1{
+  font-size:28px;
+}
+
+#player{
+  bottom:75px;
+}
+
+.playerLeft h4{
+  font-size:14px;
+}
+
+.playerLeft p{
+  font-size:12px;
+}
+
+}
