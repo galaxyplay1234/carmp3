@@ -162,54 +162,90 @@ class="musicList">
 
 <!-- Player -->
 
+<!-- PLAYER -->
+
 <div id="player">
 
-<div class="playerLeft">
+    <div class="playerLeft">
 
-<img
-id="cover"
-src="https://placehold.co/300x300"
-alt="">
+        <img
+            id="cover"
+            src="https://placehold.co/300x300"
+            alt="">
 
-<div>
+        <div>
 
-<h4 id="musicTitle">
+            <h4 id="musicTitle">
+                Nenhuma música
+            </h4>
 
-Nenhuma música
+            <p id="musicArtist">
+                Selecione uma música
+            </p>
 
-</h4>
+        </div>
 
-<p id="musicArtist">
+    </div>
 
-Selecione uma música
+    <div class="playerCenter">
 
-</p>
+        <div class="playerControls">
 
-</div>
+            <button id="shuffle">
+                <i class="fa fa-random"></i>
+            </button>
 
-</div>
+            <button id="prev">
+                <i class="fa fa-backward"></i>
+            </button>
 
-<div class="playerControls">
+            <button id="play">
+                <i class="fa fa-play"></i>
+            </button>
 
-<button id="prev">
+            <button id="next">
+                <i class="fa fa-forward"></i>
+            </button>
 
-<i class="fa fa-backward"></i>
+            <button id="repeat">
+                <i class="fa fa-repeat"></i>
+            </button>
 
-</button>
+        </div>
 
-<button id="play">
+        <div class="progressArea">
 
-<i class="fa fa-play"></i>
+            <span id="currentTime">
+                0:00
+            </span>
 
-</button>
+            <input
+                type="range"
+                id="progress"
+                value="0"
+                min="0"
+                max="100">
 
-<button id="next">
+            <span id="duration">
+                0:00
+            </span>
 
-<i class="fa fa-forward"></i>
+        </div>
 
-</button>
+    </div>
 
-</div>
+    <div class="playerRight">
+
+        <i class="fa fa-volume-up"></i>
+
+        <input
+            id="volume"
+            type="range"
+            min="0"
+            max="100"
+            value="100">
+
+    </div>
 
 </div>
 
