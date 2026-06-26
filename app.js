@@ -337,3 +337,249 @@ searchInput.addEventListener("input",()=>{
     },400);
 
 });
+
+
+
+// ======================================
+// PARTE 3
+// PLAYER + PLAYLISTS + HISTÓRICO
+// ======================================
+
+async function loadPlaylist(playlistId){
+
+    musicList.innerHTML =
+    "<div class='loading'>Carregando playlist...</div>";
+
+    try{
+
+        const response = await fetch(
+
+            `${PLAYLIST_URL}?part=snippet&maxResults=50&playlistId=${playlistId}&key=${API_KEY}`
+
+        );
+
+        const data = await response.json();
+
+        musicList.innerHTML = "";
+
+        queue = [];
+
+        data.items.forEach(item=>{
+
+            const s = item.snippet;
+
+            if(!s.resourceId) return;
+
+            const videoId = s.resourceId.videoId;
+
+            queue.push({
+
+                id: videoId,
+
+                playlist:false,
+
+                title:s.title,
+
+                artist:s.videoOwnerChannelTitle || s.channelTitle,
+
+                thumb:s.thumbnails.high
+                    ? s.thumbnails.high.url
+                    : s.thumbnails.medium.url
+
+            });
+
+        });
+
+        renderQueue();
+
+    }
+
+    catch(err){
+
+        console.log(err);
+
+        musicList.innerHTML =
+        "<div class='error'>Erro ao abrir playlist.</div>";
+
+    }
+
+}
+
+// ======================================
+
+function renderQueue(){
+
+    musicList.innerHTML = "";
+
+    queue.forEach((music,index)=>{
+
+        const card =
+        document.createElement("div");
+
+        card.className="musicCard";
+
+        card.innerHTML=`
+
+        <img src="${music.thumb}">
+
+        <div class="musicInfo">
+
+            <h4>${music.title}</h4>
+
+            <p>${music.artist}</p>
+
+        </div>
+
+        <div class="musicActions">
+
+            <button class="playBtn">
+
+                ▶
+
+            </button>
+
+        </div>
+
+        `;
+
+        card.querySelector(".playBtn")
+        .onclick=()=>{
+
+            currentIndex=index;
+
+            playCurrent();
+
+        };
+
+        musicList.appendChild(card);
+
+    });
+
+}
+
+// ======================================
+
+function playVideo(videoId,snippet){
+
+    cover.src =
+    snippet.thumbnails.high
+    ? snippet.thumbnails.high.url
+    : snippet.thumbnails.medium.url;
+
+    musicTitle.textContent =
+    snippet.title;
+
+    musicArtist.textContent =
+    snippet.channelTitle;
+
+    saveHistory({
+
+        id:videoId,
+
+        title:snippet.title,
+
+        artist:snippet.channelTitle,
+
+        thumb:cover.src
+
+    });
+
+    if(playerReady){
+
+        ytPlayer.loadVideoById(videoId);
+
+    }else{
+
+        window.open(
+
+            "https://www.youtube.com/watch?v="+videoId,
+
+            "_blank"
+
+        );
+
+    }
+
+}
+
+// ======================================
+
+function playCurrent(){
+
+    if(currentIndex<0) return;
+
+    const music = queue[currentIndex];
+
+    cover.src = music.thumb;
+
+    musicTitle.textContent = music.title;
+
+    musicArtist.textContent = music.artist;
+
+    saveHistory(music);
+
+    if(playerReady){
+
+        ytPlayer.loadVideoById(
+
+            music.id
+
+        );
+
+    }else{
+
+        window.open(
+
+            "https://www.youtube.com/watch?v="+music.id,
+
+            "_blank"
+
+        );
+
+    }
+
+}
+
+// ======================================
+
+nextButton.onclick=function(){
+
+    if(currentIndex < queue.length-1){
+
+        currentIndex++;
+
+        playCurrent();
+
+    }
+
+};
+
+prevButton.onclick=function(){
+
+    if(currentIndex > 0){
+
+        currentIndex--;
+
+        playCurrent();
+
+    }
+
+};
+
+// ======================================
+
+function saveHistory(music){
+
+    history.unshift(music);
+
+    history = history.slice(0,100);
+
+    localStorage.setItem(
+
+        "history",
+
+        JSON.stringify(history)
+
+    );
+
+}
