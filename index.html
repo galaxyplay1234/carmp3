@@ -1,169 +1,80 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-
-<meta charset="UTF-8">
-
-<meta
-name="viewport"
-content="width=device-width,initial-scale=1.0">
-
-<title>Galaxy Music</title>
-
-<link
-rel="stylesheet"
-href="style.css">
-
-<link
-rel="preconnect"
-href="https://fonts.googleapis.com">
-
-<link
-rel="preconnect"
-href="https://fonts.gstatic.com"
-crossorigin>
-
-<link
-href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
-rel="stylesheet">
-
-<link
-rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meu App de Música</title>
+  <style>
+    body { font-family: Arial; max-width: 800px; margin: 0 auto; padding: 20px; }
+    #player { margin: 20px 0; }
+    input { padding: 8px; width: 70%; }
+    button { padding: 8px 16px; cursor: pointer; }
+    .resultado { margin: 10px 0; padding: 10px; border: 1px solid #eee; border-radius: 4px; }
+  </style>
 </head>
-
 <body>
 
-<div id="app">
+  <h1>🎵 Buscar e Ouvir Músicas</h1>
 
-<header>
+  <input type="text" id="busca" placeholder="Digite o nome da música ou artista...">
+  <button onclick="buscarMusicas()">Buscar</button>
 
-<h1>Galaxy Music</h1>
+  <div id="resultados"></div>
+  <div id="player"></div>
 
-<div class="search">
+  <!-- Carrega a API do Player do YouTube -->
+  <script src="https://www.youtube.com/iframe_api"></script>
 
-<i class="fa fa-search"></i>
+  <script>
+    const CHAVE_API = "AIzaSyDWhuV8HHco14UFQlK1VTni5BpWqKnA5hE"; // Substitua pela sua chave
+    let player;
 
-<input
-id="searchInput"
-placeholder="Pesquisar">
+    // Inicializa o player
+    function onYouTubeIframeAPIReady() {
+      player = new YT.Player('player', { height: '315', width: '100%' });
+    }
 
-</div>
+    // Busca vídeos na API
+    async function buscarMusicas() {
+      const termo = document.getElementById('busca').value.trim();
+      if (!termo) return;
 
-</header>
+      const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(termo)}&type=video&videoCategoryId=10&key=${CHAVE_API}&maxResults=10`;
 
-<section id="playlistHeader">
+      try {
+        const resposta = await fetch(url);
+        const dados = await resposta.json();
+        mostrarResultados(dados.items);
+      } catch (erro) {
+        document.getElementById('resultados').innerHTML = "Erro ao buscar. Verifique sua chave de API.";
+      }
+    }
 
-<img
-id="playlistCover"
-src="https://placehold.co/500x500">
+    // Exibe os resultados
+    function mostrarResultados(lista) {
+      const div = document.getElementById('resultados');
+      div.innerHTML = "";
 
-<div>
+      lista.forEach(item => {
+        const titulo = item.snippet.title;
+        const idVideo = item.id.videoId;
+        const canal = item.snippet.channelTitle;
 
-<h2 id="playlistTitle">
+        div.innerHTML += `
+          <div class="resultado" onclick="reproduzir('${idVideo}')">
+            <strong>${titulo}</strong><br>
+            <small>Canal: ${canal}</small>
+          </div>
+        `;
+      });
+    }
 
-Topnejo
-
-</h2>
-
-<p id="playlistDescription">
-
-As sertanejas mais tocadas.
-
-</p>
-
-<button id="playAll">
-
-<i class="fa fa-play"></i>
-
-Ouvir Tudo
-
-</button>
-
-</div>
-
-</section>
-
-<section>
-
-<h3>Músicas</h3>
-
-<div id="musicList">
-
-</div>
-
-</section>
-
-</div>
-
-<div id="player">
-
-<div class="left">
-
-<img
-id="cover"
-src="https://placehold.co/300">
-
-<div>
-
-<h4 id="musicTitle">
-
-Nenhuma música
-
-</h4>
-
-<p id="musicArtist">
-
-Galaxy Music
-
-</p>
-
-</div>
-
-</div>
-
-<div class="center">
-
-<button id="prev">
-
-<i class="fa fa-backward"></i>
-
-</button>
-
-<button id="play">
-
-<i class="fa fa-play"></i>
-
-</button>
-
-<button id="next">
-
-<i class="fa fa-forward"></i>
-
-</button>
-
-</div>
-
-</div>
-
-<div
-id="youtube-player"
-style="display:none"></div>
-
-<script src="app.js"></script>
-
-<script>
-
-if("serviceWorker" in navigator){
-
-navigator.serviceWorker.register("service-worker.js");
-
-}
-
-</script>
+    // Reproduz o vídeo selecionado
+    function reproduzir(id) {
+      player.loadVideoById(id);
+      player.playVideo();
+    }
+  </script>
 
 </body>
-
 </html>
