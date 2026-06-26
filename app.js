@@ -768,3 +768,226 @@ playButton.onclick=function(){
 
 renderFavorites();
 
+
+// ======================================
+// PARTE 5
+// CONTROLES DO PLAYER
+// ======================================
+
+// MODO ALEATÓRIO
+
+let shuffle = false;
+
+// REPETIÇÃO
+
+let repeat = false;
+
+// VOLUME
+
+let volume = 100;
+
+// ======================================
+// ALTERA VOLUME
+// ======================================
+
+function setVolume(value){
+
+    volume = value;
+
+    if(playerReady){
+
+        ytPlayer.setVolume(volume);
+
+    }
+
+}
+
+// ======================================
+// ALEATÓRIO
+// ======================================
+
+function toggleShuffle(){
+
+    shuffle = !shuffle;
+
+    console.log(
+        "Shuffle:",
+        shuffle
+    );
+
+}
+
+// ======================================
+// REPETIR
+// ======================================
+
+function toggleRepeat(){
+
+    repeat = !repeat;
+
+    console.log(
+        "Repeat:",
+        repeat
+    );
+
+}
+
+// ======================================
+// TOCAR PRÓXIMA
+// ======================================
+
+function nextMusic(){
+
+    if(queue.length===0) return;
+
+    if(shuffle){
+
+        currentIndex = Math.floor(
+
+            Math.random() * queue.length
+
+        );
+
+    }
+
+    else{
+
+        currentIndex++;
+
+        if(currentIndex>=queue.length){
+
+            if(repeat){
+
+                currentIndex=0;
+
+            }
+
+            else{
+
+                currentIndex=
+
+                queue.length-1;
+
+                return;
+
+            }
+
+        }
+
+    }
+
+    playCurrent();
+
+}
+
+// ======================================
+// TOCAR ANTERIOR
+// ======================================
+
+function previousMusic(){
+
+    if(queue.length===0) return;
+
+    currentIndex--;
+
+    if(currentIndex<0){
+
+        currentIndex=0;
+
+    }
+
+    playCurrent();
+
+}
+
+// ======================================
+// BOTÕES
+// ======================================
+
+nextButton.onclick=nextMusic;
+
+prevButton.onclick=previousMusic;
+
+// ======================================
+// PLAYER EVENTS
+// ======================================
+
+window.onPlayerStateChange=function(event){
+
+    switch(event.data){
+
+        case YT.PlayerState.ENDED:
+
+            nextMusic();
+
+        break;
+
+        case YT.PlayerState.PLAYING:
+
+            playButton.innerHTML="⏸";
+
+        break;
+
+        case YT.PlayerState.PAUSED:
+
+            playButton.innerHTML="▶";
+
+        break;
+
+    }
+
+};
+
+// ======================================
+// ATUALIZA PLAYER
+// ======================================
+
+if(playerReady){
+
+    ytPlayer.addEventListener(
+
+        "onStateChange",
+
+        "onPlayerStateChange"
+
+    );
+
+}
+
+// ======================================
+// TEMPO DA MÚSICA
+// ======================================
+
+setInterval(()=>{
+
+    if(!playerReady) return;
+
+    try{
+
+        const atual =
+
+        ytPlayer.getCurrentTime();
+
+        const total =
+
+        ytPlayer.getDuration();
+
+        console.log(
+
+            atual,
+
+            "/",
+
+            total
+
+        );
+
+    }
+
+    catch(e){
+
+    }
+
+},1000);
+
+
