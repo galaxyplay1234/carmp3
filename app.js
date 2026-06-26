@@ -133,3 +133,207 @@ console.log(
 });
 
 };
+
+// ======================================
+// PARTE 2
+// PESQUISA DE VÍDEOS E PLAYLISTS
+// ======================================
+
+async function searchYouTube(query){
+
+    if(!query.trim()){
+        musicList.innerHTML="";
+        return;
+    }
+
+    musicList.innerHTML=
+    "<div class='loading'>Pesquisando...</div>";
+
+    try{
+
+        const response =
+        await fetch(
+
+            `${SEARCH_URL}?part=snippet&type=video,playlist&maxResults=25&q=${encodeURIComponent(query)}&key=${API_KEY}`
+
+        );
+
+        const data =
+        await response.json();
+
+        if(data.error){
+
+            musicList.innerHTML=`
+            <div class="error">
+                ${data.error.message}
+            </div>
+            `;
+
+            return;
+
+        }
+
+        queue=[];
+
+        renderResults(data.items);
+
+    }
+
+    catch(e){
+
+        musicList.innerHTML=`
+        <div class="error">
+            Erro ao pesquisar.
+        </div>
+        `;
+
+        console.log(e);
+
+    }
+
+}
+
+// ======================================
+
+function renderResults(items){
+
+    musicList.innerHTML="";
+
+    items.forEach(item=>{
+
+        const snippet=item.snippet;
+
+        const playlist =
+        item.id.kind==="youtube#playlist";
+
+        const id=
+        playlist
+        ?item.id.playlistId
+        :item.id.videoId;
+
+        queue.push({
+
+            id,
+
+            playlist,
+
+            title:snippet.title,
+
+            artist:snippet.channelTitle,
+
+            thumb:
+            snippet.thumbnails.high
+            ?snippet.thumbnails.high.url
+            :snippet.thumbnails.medium.url
+
+        });
+
+        const card=
+        document.createElement("div");
+
+        card.className="musicCard";
+
+        card.innerHTML=`
+
+        <img src="${snippet.thumbnails.medium.url}">
+
+        <div class="musicInfo">
+
+            <h4>
+
+                ${snippet.title}
+
+            </h4>
+
+            <p>
+
+                ${snippet.channelTitle}
+
+            </p>
+
+        </div>
+
+        <div class="musicActions">
+
+            <button class="playBtn">
+
+                ${playlist?"📁":"▶"}
+
+            </button>
+
+            <button class="favBtn">
+
+                ❤
+
+            </button>
+
+        </div>
+
+        `;
+
+        // PLAY
+
+        card
+        .querySelector(".playBtn")
+        .onclick=()=>{
+
+            if(playlist){
+
+                loadPlaylist(id);
+
+            }else{
+
+                playVideo(id,snippet);
+
+            }
+
+        };
+
+        // FAVORITOS
+
+        card
+        .querySelector(".favBtn")
+        .onclick=()=>{
+
+            addFavorite({
+
+                id,
+
+                title:snippet.title,
+
+                artist:snippet.channelTitle,
+
+                thumb:snippet.thumbnails.high.url
+
+            });
+
+        };
+
+        musicList.appendChild(card);
+
+    });
+
+}
+
+// ======================================
+// PESQUISA AUTOMÁTICA
+// ======================================
+
+let searchTimer;
+
+searchInput.addEventListener("input",()=>{
+
+    clearTimeout(searchTimer);
+
+    searchTimer=
+    setTimeout(()=>{
+
+        searchYouTube(
+
+            searchInput.value
+
+        );
+
+    },400);
+
+});
