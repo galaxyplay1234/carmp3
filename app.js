@@ -583,3 +583,188 @@ function saveHistory(music){
     );
 
 }
+
+
+
+// ======================================
+// PARTE 4
+// FAVORITOS
+// ======================================
+
+function addFavorite(music){
+
+    const exists =
+    favorites.find(item=>item.id===music.id);
+
+    if(exists){
+
+        alert("Essa música já está nos favoritos.");
+
+        return;
+
+    }
+
+    favorites.push(music);
+
+    localStorage.setItem(
+
+        "favorites",
+
+        JSON.stringify(favorites)
+
+    );
+
+    renderFavorites();
+
+}
+
+// ======================================
+
+function removeFavorite(id){
+
+    favorites = favorites.filter(
+
+        item=>item.id!==id
+
+    );
+
+    localStorage.setItem(
+
+        "favorites",
+
+        JSON.stringify(favorites)
+
+    );
+
+    renderFavorites();
+
+}
+
+// ======================================
+
+function renderFavorites(){
+
+    if(!offlineList) return;
+
+    offlineList.innerHTML="";
+
+    if(favorites.length===0){
+
+        offlineList.innerHTML=`
+
+        <div class="empty">
+
+            Nenhum favorito.
+
+        </div>
+
+        `;
+
+        return;
+
+    }
+
+    favorites.forEach((music,index)=>{
+
+        const card=document.createElement("div");
+
+        card.className="musicCard";
+
+        card.innerHTML=`
+
+        <img src="${music.thumb}">
+
+        <div class="musicInfo">
+
+            <h4>
+
+                ${music.title}
+
+            </h4>
+
+            <p>
+
+                ${music.artist}
+
+            </p>
+
+        </div>
+
+        <div class="musicActions">
+
+            <button class="playBtn">
+
+                ▶
+
+            </button>
+
+            <button class="removeBtn">
+
+                🗑
+
+            </button>
+
+        </div>
+
+        `;
+
+        card
+        .querySelector(".playBtn")
+        .onclick=()=>{
+
+            queue = favorites;
+
+            currentIndex = index;
+
+            playCurrent();
+
+        };
+
+        card
+        .querySelector(".removeBtn")
+        .onclick=()=>{
+
+            removeFavorite(music.id);
+
+        };
+
+        offlineList.appendChild(card);
+
+    });
+
+}
+
+// ======================================
+// BOTÃO PLAY
+// ======================================
+
+playButton.onclick=function(){
+
+    if(!playerReady) return;
+
+    const state = ytPlayer.getPlayerState();
+
+    if(state===YT.PlayerState.PLAYING){
+
+        ytPlayer.pauseVideo();
+
+        playButton.innerHTML="▶";
+
+    }
+
+    else{
+
+        ytPlayer.playVideo();
+
+        playButton.innerHTML="⏸";
+
+    }
+
+};
+
+// ======================================
+// CARREGA FAVORITOS
+// ======================================
+
+renderFavorites();
+
