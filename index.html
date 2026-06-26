@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>Galaxy Music</title>
+
+<meta name="theme-color" content="#111111">
+
+<link rel="manifest" href="manifest.json">
+
+<link rel="stylesheet" href="style.css">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+</head>
+
+<body>
+
+<!-- Splash -->
+
+<div id="splash">
+
+<div class="logoCircle">
+<i class="fa-solid fa-music"></i>
+</div>
+
+<h1>Galaxy Music</h1>
+
+</div>
+
+<!-- App -->
+
+<div id="app">
+
+<!-- Header -->
+
+<header>
+
+<h2>Galaxy Music</h2>
+
+<div class="searchBox">
+
+<i class="fa fa-search"></i>
+
+<input
+type="text"
+placeholder="Pesquisar músicas..."
+id="searchInput">
+
+</div>
+
+</header>
+
+<!-- Destaque -->
+
+<section class="hero">
+
+<div class="heroOverlay">
+
+<div>
+
+<p>Playlist em destaque</p>
+
+<h1>Top Hits</h1>
+
+<button id="playFeatured">
+
+<i class="fa fa-play"></i>
+
+Tocar Agora
+
+</button>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- Categorias -->
+
+<section class="section">
+
+<div class="sectionTitle">
+
+<h3>Categorias</h3>
+
+</div>
+
+<div class="chips">
+
+<div class="chip">Pop</div>
+
+<div class="chip">Rock</div>
+
+<div class="chip">Sertanejo</div>
+
+<div class="chip">Eletrônica</div>
+
+<div class="chip">Pagode</div>
+
+<div class="chip">Funk</div>
+
+<div class="chip">Rap</div>
+
+<div class="chip">Gospel</div>
+
+</div>
+
+</section>
+
+<!-- Resultados -->
+
+<section class="section">
+
+<div class="sectionTitle">
+
+<h3>Resultados</h3>
+
+</div>
+
+<div id="musicList" class="musicList">
+
+<!-- JS -->
+
+</div>
+
+</section>
+
+<!-- Downloads -->
+
+<section class="section">
+
+<div class="sectionTitle">
+
+<h3>Offline</h3>
+
+<button id="refreshDownloads">
+
+Atualizar
+
+</button>
+
+</div>
+
+<div id="offlineList"
+
+class="musicList">
+
+</div>
+
+</section>
+
+<!-- Player -->
+
+<div id="player">
+
+<div class="playerLeft">
+
+<img
+id="cover"
+src="https://placehold.co/300x300"
+alt="">
+
+<div>
+
+<h4 id="musicTitle">
+
+Nenhuma música
+
+</h4>
+
+<p id="musicArtist">
+
+Selecione uma música
+
+</p>
+
+</div>
+
+</div>
+
+<div class="playerControls">
+
+<button id="prev">
+
+<i class="fa fa-backward"></i>
+
+</button>
+
+<button id="play">
+
+<i class="fa fa-play"></i>
+
+</button>
+
+<button id="next">
+
+<i class="fa fa-forward"></i>
+
+</button>
+
+</div>
+
+</div>
+
+<audio id="audio"></audio>
+
+<!-- Navegação -->
+
+<nav>
+
+<button class="navItem active">
+
+<i class="fa fa-home"></i>
+
+<span>Início</span>
+
+</button>
+
+<button class="navItem">
+
+<i class="fa fa-download"></i>
+
+<span>Offline</span>
+
+</button>
+
+<button class="navItem">
+
+<i class="fa fa-heart"></i>
+
+<span>Favoritos</span>
+
+</button>
+
+<button class="navItem">
+
+<i class="fa fa-user"></i>
+
+<span>Perfil</span>
+
+</button>
+
+</nav>
+
+</div>
+
+<script src="app.js"></script>
+
+<script>
+
+if('serviceWorker' in navigator){
+
+navigator.serviceWorker.register('service-worker.js');
+
+}
+
+</script>
+
+</body>
+
+</html>
