@@ -29,8 +29,8 @@
     .controles { display: flex; gap: 15px; justify-content: center; margin-top: 20px; }
     .controles button { min-width: 90px; }
 
-    /* Player invisível (só áudio) */
-    #player { width: 0; height: 0; position: absolute; opacity: 0; pointer-events: none; }
+    /* Player invisível — só áudio, segue as regras da API */
+    #player { width: 200px; height: 200px; position: absolute; left: -9999px; top: -9999px; opacity: 0; pointer-events: none; }
   </style>
 </head>
 <body>
@@ -62,53 +62,70 @@
 
   <script src="https://www.youtube.com/iframe_api"></script>
   <script>
-    const CHAVE_API = "AIzaSyDWhuV8HHco14UFQlK1VTni5BpWqKnA5hE"; // Coloque sua chave da API
-    let player, idAtual, tituloAtual, canalAtual;
+    // ⚠️ Essa chave é de exemplo — use a SUA própria chave da API do YouTube
+    const CHAVE_API = "AIzaSyDWhuV8HHco14UFQlK1VTni5BpWqKnA5hE";
+    let player;
 
-    // Inicia player invisível só áudio
+    // Inicializa o player de forma válida (tamanho mínimo exigido pela API)
     function onYouTubeIframeAPIReady() {
       player = new YT.Player('player', {
-        height: '0', width: '0',
-        playerVars: { autoplay: 0, controls: 0, disablekb: 1, modestbranding: 1 }[[__LINK_ICON]](https://developers.google.com/youtube/player_parameters?csw=1&f_link_type=f_linkinlinenote&flow_extra=eyJpbmxpbmVfZGlzcGxheV9wb3NpdGlvbiI6MCwiZG9jX3Bvc2l0aW9uIjowLCJkb2NfaWQiOiJlNGQ3MTQxMTAxNjMwOWEyLWE3NmI1MmRhZTE1MzdlODYifQ%3D%3D&hl=ru&id=26 "__LINK_ICON")
+        height: '200',
+        width: '200',
+        playerVars: {
+          autoplay: 0,
+          controls: 0,
+          disablekb: 1,
+          iv_load_policy: 3,
+          rel: 0
+        }
       });
     }
 
-    // Busca músicas
+    // Busca apenas vídeos da categoria Música
     async function buscar() {
       const q = document.getElementById('termo').value.trim();
       if (!q) return;
+
       const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(q)}&type=video&videoCategoryId=10&key=${CHAVE_API}&maxResults=12`;
-      const res = await fetch(url);
-      const dados = await res.json();
-      mostrar(dados.items);
+
+      try {
+        const res = await fetch(url);
+        const dados = await res.json();
+        if (dados.error) {
+          alert("Erro: Verifique sua chave de API ou limites de uso.");
+          return;
+        }
+        mostrarResultados(dados.items);
+      } catch (erro) {
+        alert("Falha na busca. Verifique sua conexão.");
+      }
     }
 
-    function mostrar(lista) {
+    function mostrarResultados(lista) {
       const div = document.getElementById('lista');
       div.innerHTML = "";
       lista.forEach(item => {
         const id = item.id.videoId;
-        const tit = item.snippet.title;
-        const can = item.snippet.channelTitle;
+        const titulo = item.snippet.title.replace(/"/g, '&quot;');
+        const canal = item.snippet.channelTitle.replace(/"/g, '&quot;');
         div.innerHTML += `
-          <div class="resultado" onclick="abrirPlayer('${id}', '${tit.replace(/'/g, "\\'")}', '${can.replace(/'/g, "\\'")}')">
-            <div class="titulo">${tit}</div>
-            <div class="canal">${can}</div>
+          <div class="resultado" onclick="abrirPlayer('${id}', '${titulo}', '${canal}')">
+            <div class="titulo">${item.snippet.title}</div>
+            <div class="canal">${item.snippet.channelTitle}</div>
           </div>`;
       });
     }
 
     function abrirPlayer(id, titulo, canal) {
-      idAtual=id; tituloAtual=titulo; canalAtual=canal;
-      document.getElementById('nomeMusica').textContent=titulo;
-      document.getElementById('nomeCanal').textContent=canal;
-      document.getElementById('modal').style.display="flex";
+      document.getElementById('nomeMusica').textContent = titulo;
+      document.getElementById('nomeCanal').textContent = canal;
+      document.getElementById('modal').style.display = "flex";
       player.loadVideoById(id);
       player.playVideo();
     }
 
     function fecharModal() {
-      document.getElementById('modal').style.display="none";
+      document.getElementById('modal').style.display = "none";
       player.pauseVideo();
     }
 
