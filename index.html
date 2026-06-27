@@ -5,132 +5,243 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Meu App de Música</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
-    body { background: #121212; color: #fff; padding: 20px; max-width: 600px; margin: 0 auto; }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; }
+    :root {
+      --bg: #121212;
+      --card: #1e1e1e;
+      --highlight: #1db954;
+      --text: #ffffff;
+      --text-muted: #b3b3b3;
+    }
+    body { background: var(--bg); color: var(--text); padding: 20px; max-width: 600px; margin: 0 auto; }
 
-    /* Campo de busca */
-    h1 { text-align: center; margin: 20px 0; font-size: 22px; }
-    .busca { display: flex; gap: 8px; margin-bottom: 25px; }
-    input { flex: 1; padding: 12px; border: none; border-radius: 8px; font-size: 16px; background: #1e1e1e; color: #fff; }
-    button { padding: 12px 20px; border: none; border-radius: 8px; background: #1db954; color: #000; font-weight: bold; cursor: pointer; }
+    /* Cabeçalho e busca */
+    h1 { text-align: center; margin: 20px 0; font-size: 22px; font-weight: 600; }
+    .busca { display: flex; gap: 10px; margin-bottom: 30px; }
+    input { flex: 1; padding: 14px 16px; border: none; border-radius: 50px; font-size: 16px; background: var(--card); color: var(--text); outline: none; }
+    button { padding: 14px 24px; border: none; border-radius: 50px; background: var(--highlight); color: #000; font-weight: bold; cursor: pointer; transition: 0.2s; }
+    button:hover { filter: brightness(0.9); }
 
-    /* Resultados */
-    .resultado { padding: 14px; margin: 8px 0; background: #1e1e1e; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+    /* Lista de resultados */
+    .resultado {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 16px; margin: 8px 0;
+      background: var(--card); border-radius: 8px;
+      cursor: pointer; transition: 0.2s;
+    }
     .resultado:hover { background: #2a2a2a; }
-    .titulo { font-weight: bold; margin-bottom: 4px; }
-    .canal { font-size: 13px; color: #b3b3b3; }
+    .capa { width: 48px; height: 48px; border-radius: 4px; background: #333; flex-shrink: 0; display: grid; place-items: center; font-size: 20px; }
+    .info { flex: 1; overflow: hidden; }
+    .titulo { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .canal { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
 
-    /* Modal (janela por cima) */
-    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 999; align-items: center; justify-content: center; }
-    .modal-conteudo { background: #1e1e1e; padding: 30px; border-radius: 12px; width: 90%; max-width: 400px; text-align: center; }
-    .fechar { float: right; font-size: 24px; cursor: pointer; color: #aaa; }
-    .fechar:hover { color: #fff; }
-    .info-musica { margin: 25px 0; }
-    .controles { display: flex; gap: 15px; justify-content: center; margin-top: 20px; }
-    .controles button { min-width: 90px; }
+    /* Modal / Player Estilo Spotify */
+    .modal {
+      display: none; position: fixed; inset: 0;
+      background: linear-gradient(to bottom, #282828, var(--bg));
+      z-index: 999; padding: 30px 20px;
+      overflow-y: auto;
+    }
+    .modal-topo { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+    .voltar { font-size: 24px; cursor: pointer; color: var(--text); }
+    .capa-grande { width: 260px; height: 260px; margin: 0 auto 40px; border-radius: 8px; background: #333; display: grid; place-items: center; font-size: 80px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
+    .info-musica { text-align: center; margin-bottom: 30px; }
+    .info-musica h2 { font-size: 22px; margin-bottom: 8px; }
+    .info-musica p { color: var(--text-muted); font-size: 16px; }
 
-    /* Player invisível — só áudio, segue as regras da API */
+    /* Barra de progresso */
+    .barra-container { margin-bottom: 12px; }
+    .barra { width: 100%; height: 6px; background: #535353; border-radius: 3px; cursor: pointer; position: relative; }
+    .barra-preenchida { height: 100%; width: 0%; background: var(--text); border-radius: 3px; transition: width 0.1s linear; }
+    .tempos { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); margin-top: 6px; }
+
+    /* Controles */
+    .controles { display: flex; align-items: center; justify-content: center; gap: 24px; margin-top: 30px; }
+    .controles button {
+      width: 56px; height: 56px; border-radius: 50%;
+      font-size: 24px; display: grid; place-items: center;
+      background: var(--text); color: #000;
+    }
+    .controles button.secundario {
+      width: 40px; height: 40px; font-size: 18px;
+      background: transparent; color: var(--text-muted);
+    }
+    .controles button.secundario:hover { color: var(--text); background: #333; }
+
+    /* Player invisível válido para API */
     #player { width: 200px; height: 200px; position: absolute; left: -9999px; top: -9999px; opacity: 0; pointer-events: none; }
   </style>
 </head>
 <body>
 
-  <h1>🎵 Buscar Músicas</h1>
+  <h1>🎵 Minha Música</h1>
 
   <div class="busca">
-    <input type="text" id="termo" placeholder="Nome da música ou artista...">
+    <input type="text" id="termo" placeholder="Buscar música ou artista...">
     <button onclick="buscar()">Buscar</button>
   </div>
 
   <div id="lista"></div>
 
-  <!-- Modal do reprodutor -->
+  <!-- Player Modal Estilo Spotify -->
   <div id="modal" class="modal">
-    <div class="modal-conteudo">
-      <span class="fechar" onclick="fecharModal()">&times;</span>
-      <div class="info-musica">
-        <h3 id="nomeMusica">Título da Música</h3>
-        <p id="nomeCanal"></p>
-      </div>
-      <div class="controles">
-        <button onclick="pausar()">❚❚ Pausar</button>
-        <button onclick="tocar()">▶️ Continuar</button>
-      </div>
-      <div id="player"></div>
+    <div class="modal-topo">
+      <span class="voltar" onclick="fecharModal()">&larr;</span>
+      <span>Tocando agora</span>
+      <span></span>
     </div>
+
+    <div class="capa-grande" id="capaGrande">🎵</div>
+
+    <div class="info-musica">
+      <h2 id="nomeMusica">Título da Música</h2>
+      <p id="nomeCanal">Artista / Canal</p>
+    </div>
+
+    <div class="barra-container">
+      <div class="barra" id="barraProgresso" onclick="ajustarTempo(event)">
+        <div class="barra-preenchida" id="barraPreenchida"></div>
+      </div>
+      <div class="tempos">
+        <span id="tempoAtual">0:00</span>
+        <span id="tempoTotal">0:00</span>
+      </div>
+    </div>
+
+    <div class="controles">
+      <button class="secundario" onclick="alternarRepetir()">🔁</button>
+      <button class="secundario" onclick="anterior()">⏮</button>
+      <button onclick="alternarPlay()">▶️</button>
+      <button class="secundario" onclick="proximo()">⏭</button>
+      <button class="secundario" onclick="alternarAleatorio()">🔀</button>
+    </div>
+
+    <div id="player"></div>
   </div>
 
   <script src="https://www.youtube.com/iframe_api"></script>
   <script>
-    // ⚠️ Essa chave é de exemplo — use a SUA própria chave da API do YouTube
+    // ⚠️ Substitua pela SUA chave da API do YouTube
     const CHAVE_API = "AIzaSyDWhuV8HHco14UFQlK1VTni5BpWqKnA5hE";
-    let player;
+    let player, listaMusicas = [], indiceAtual = 0, repetir = false, aleatorio = false;
+    let intervaloProgresso;
 
-    // Inicializa o player de forma válida (tamanho mínimo exigido pela API)
+    // Inicializa player
     function onYouTubeIframeAPIReady() {
       player = new YT.Player('player', {
-        height: '200',
-        width: '200',
-        playerVars: {
-          autoplay: 0,
-          controls: 0,
-          disablekb: 1,
-          iv_load_policy: 3,
-          rel: 0
-        }
+        height: '200', width: '200',
+        playerVars: { autoplay: 0, controls: 0, disablekb: 1, iv_load_policy: 3, rel: 0 }
       });
     }
 
-    // Busca apenas vídeos da categoria Música
+    // Busca músicas
     async function buscar() {
       const q = document.getElementById('termo').value.trim();
       if (!q) return;
 
-      const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(q)}&type=video&videoCategoryId=10&key=${CHAVE_API}&maxResults=12`;
-
+      const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(q)}&type=video&videoCategoryId=10&key=${CHAVE_API}&maxResults=15`;
       try {
         const res = await fetch(url);
         const dados = await res.json();
-        if (dados.error) {
-          alert("Erro: Verifique sua chave de API ou limites de uso.");
-          return;
-        }
-        mostrarResultados(dados.items);
-      } catch (erro) {
-        alert("Falha na busca. Verifique sua conexão.");
-      }
+        if (dados.error) { alert("Erro: verifique sua chave de API."); return; }
+        listaMusicas = dados.items;
+        mostrarResultados(listaMusicas);
+      } catch (e) { alert("Erro na busca."); }
     }
 
     function mostrarResultados(lista) {
       const div = document.getElementById('lista');
       div.innerHTML = "";
-      lista.forEach(item => {
-        const id = item.id.videoId;
-        const titulo = item.snippet.title.replace(/"/g, '&quot;');
-        const canal = item.snippet.channelTitle.replace(/"/g, '&quot;');
+      lista.forEach((item, i) => {
+        const tit = item.snippet.title.replace(/"/g, '&quot;');
+        const can = item.snippet.channelTitle.replace(/"/g, '&quot;');
         div.innerHTML += `
-          <div class="resultado" onclick="abrirPlayer('${id}', '${titulo}', '${canal}')">
-            <div class="titulo">${item.snippet.title}</div>
-            <div class="canal">${item.snippet.channelTitle}</div>
+          <div class="resultado" onclick="abrirPlayer(${i})">
+            <div class="capa">🎵</div>
+            <div class="info">
+              <div class="titulo">${tit}</div>
+              <div class="canal">${can}</div>
+            </div>
           </div>`;
       });
     }
 
-    function abrirPlayer(id, titulo, canal) {
-      document.getElementById('nomeMusica').textContent = titulo;
-      document.getElementById('nomeCanal').textContent = canal;
-      document.getElementById('modal').style.display = "flex";
-      player.loadVideoById(id);
+    function abrirPlayer(indice) {
+      indiceAtual = indice;
+      const musica = listaMusicas[indice];
+      document.getElementById('nomeMusica').textContent = musica.snippet.title;
+      document.getElementById('nomeCanal').textContent = musica.snippet.channelTitle;
+      document.getElementById('modal').style.display = "block";
+      player.loadVideoById(musica.id.videoId);
       player.playVideo();
+      iniciarAtualizacaoProgresso();
+    }
+
+    function alternarPlay() {
+      if (!player) return;
+      const botao = document.querySelector('.controles button:nth-child(3)');
+      if (player.getPlayerState() === YT.PlayerState.PLAYING) {
+        player.pauseVideo();
+        botao.textContent = "▶️";
+      } else {
+        player.playVideo();
+        botao.textContent = "⏸";
+      }
     }
 
     function fecharModal() {
       document.getElementById('modal').style.display = "none";
       player.pauseVideo();
+      clearInterval(intervaloProgresso);
     }
 
-    function pausar() { player.pauseVideo(); }
-    function tocar() { player.playVideo(); }
+    // Atualiza barra de progresso e tempo
+    function iniciarAtualizacaoProgresso() {
+      clearInterval(intervaloProgresso);
+      intervaloProgresso = setInterval(() => {
+        if (!player || player.getDuration() === 0) return;
+        const atual = player.getCurrentTime();
+        const total = player.getDuration();
+        const porcentagem = (atual / total) * 100;
+
+        document.getElementById('barraPreenchida').style.width = porcentagem + "%";
+        document.getElementById('tempoAtual').textContent = formatarTempo(atual);
+        document.getElementById('tempoTotal').textContent = formatarTempo(total);
+
+        // Reprodução automática próxima música
+        if (atual >= total - 0.5) {
+          if (repetir) player.seekTo(0);
+          else proximo();
+        }
+      }, 500);
+    }
+
+    function ajustarTempo(e) {
+      if (!player || player.getDuration() === 0) return;
+      const barra = e.currentTarget;
+      const posX = e.offsetX;
+      const largura = barra.clientWidth;
+      const tempoNovo = (posX / largura) * player.getDuration();
+      player.seekTo(tempoNovo);
+    }
+
+    function formatarTempo(segundos) {
+      const min = Math.floor(segundos / 60);
+      const seg = Math.floor(segundos % 60);
+      return `${min}:${seg < 10 ? '0' : ''}${seg}`;
+    }
+
+    function anterior() { if (indiceAtual > 0) abrirPlayer(indiceAtual - 1); }
+    function proximo() {
+      if (aleatorio) {
+        const novo = Math.floor(Math.random() * listaMusicas.length);
+        abrirPlayer(novo);
+      } else if (indiceAtual < listaMusicas.length - 1) {
+        abrirPlayer(indiceAtual + 1);
+      }
+    }
+    function alternarRepetir() { repetir = !repetir; document.querySelector('.controles button:nth-child(1)').style.color = repetir ? "var(--highlight)" : "var(--text-muted)"; }
+    function alternarAleatorio() { aleatorio = !aleatorio; document.querySelector('.controles button:nth-child(5)').style.color = aleatorio ? "var(--highlight)" : "var(--text-muted)"; }
   </script>
 
 </body>
