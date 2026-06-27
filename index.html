@@ -30,7 +30,13 @@
       cursor: pointer; transition: 0.2s;
     }
     .resultado:hover { background: #2a2a2a; }
-    .capa { width: 48px; height: 48px; border-radius: 4px; background: #333; flex-shrink: 0; display: grid; place-items: center; font-size: 20px; }
+    .capa {
+      width: 48px; height: 48px; border-radius: 4px;
+      background: #333; flex-shrink: 0;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
     .info { flex: 1; overflow: hidden; }
     .titulo { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .canal { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
@@ -44,7 +50,14 @@
     }
     .modal-topo { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
     .voltar { font-size: 24px; cursor: pointer; color: var(--text); }
-    .capa-grande { width: 260px; height: 260px; margin: 0 auto 40px; border-radius: 8px; background: #333; display: grid; place-items: center; font-size: 80px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
+    .capa-grande {
+      width: 260px; height: 260px; margin: 0 auto 40px; border-radius: 8px;
+      background: #333;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    }
     .info-musica { text-align: center; margin-bottom: 30px; }
     .info-musica h2 { font-size: 22px; margin-bottom: 8px; }
     .info-musica p { color: var(--text-muted); font-size: 16px; }
@@ -91,7 +104,7 @@
       <span></span>
     </div>
 
-    <div class="capa-grande" id="capaGrande">🎵</div>
+    <div class="capa-grande" id="capaGrande"></div>
 
     <div class="info-musica">
       <h2 id="nomeMusica">Título da Música</h2>
@@ -155,9 +168,10 @@
       lista.forEach((item, i) => {
         const tit = item.snippet.title.replace(/"/g, '&quot;');
         const can = item.snippet.channelTitle.replace(/"/g, '&quot;');
+        const capaPequena = item.snippet.thumbnails.default.url;
         div.innerHTML += `
           <div class="resultado" onclick="abrirPlayer(${i})">
-            <div class="capa">🎵</div>
+            <div class="capa" style="background-image:url('${capaPequena}')"></div>
             <div class="info">
               <div class="titulo">${tit}</div>
               <div class="canal">${can}</div>
@@ -171,6 +185,8 @@
       const musica = listaMusicas[indice];
       document.getElementById('nomeMusica').textContent = musica.snippet.title;
       document.getElementById('nomeCanal').textContent = musica.snippet.channelTitle;
+      // 🎵 CAPA GRANDE AQUI
+      document.getElementById('capaGrande').style.backgroundImage = `url('${musica.snippet.thumbnails.high.url}')`;
       document.getElementById('modal').style.display = "block";
       player.loadVideoById(musica.id.videoId);
       player.playVideo();
